@@ -3,8 +3,8 @@ from tkinter import ttk
 
 
 class App:
-    def __init__(self, root):
-        self.win = root
+    def __init__(self, window):
+        self.win = window
         self.win.title("Book Register App")
 
         # Create options for "books read" and "books to read"
