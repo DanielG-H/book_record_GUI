@@ -14,36 +14,50 @@ class App:
 
         # Select options
         books_read = Button(frame_main, text="Books Read", fg="gray10", bg="gold",
-                            padx=65, pady=30, command=self.open_read_window)
+                            padx=65, pady=30, command=lambda: self.open_read_window(books_read))
         books_read.grid(row=0, column=0, padx=5, pady=5)
 
         books_to_read = Button(frame_main, text="Books To Read", fg="gray10", bg="goldenrod",
-                               padx=65, pady=30, command=self.open_to_read_window)
+                               padx=65, pady=30, command=lambda: self.open_to_read_window(books_to_read))
         books_to_read.grid(row=0, column=1, padx=5, pady=5)
 
     def disable_event(self):
         pass
 
-    def exit_open_menu(self, opt):
+    def exit_open_menu(self, opt, button):
+        # prevents exiting the main menu without a button
         opt.protocol("WM_DELETE_WINDOW", self.disable_event)
         close_menu = Button(opt, text="Close Main Menu", command=self.win.withdraw)
         close_menu.grid(row=0, column=1)
 
-        go_to_menu = Button(opt, text="Go To Main Menu", command=lambda: [self.win.deiconify(), opt.withdraw()])
+        # goes to main menu and closes the other window
+        go_to_menu = Button(opt, text="Go To Main Menu",
+                            command=lambda: [self.win.deiconify(), opt.withdraw(), self.enable_button(button)])
         go_to_menu.grid(row=0, column=2)
 
-    def open_read_window(self):
+    # opens windows
+    def open_read_window(self, button):
         read = Toplevel()
         read.title("Book Register App - [Books Read]")
-        self.exit_open_menu(read)
+        self.disable_button(button)
+        self.exit_open_menu(read, button)
         read.mainloop()
 
-    def open_to_read_window(self):
+    def open_to_read_window(self, button):
         to_read = Toplevel()
         to_read.title("Book Register App - [Books To Read]")
-        self.exit_open_menu(to_read)
+        self.disable_button(button)
+        self.exit_open_menu(to_read, button)
         to_read.mainloop()
-        
+
+    @staticmethod
+    def disable_button(button):
+        button.config(state=DISABLED)
+
+    @staticmethod
+    def enable_button(button):
+        button.config(state=NORMAL)
+
     def data_entry(self):
         pass
 
