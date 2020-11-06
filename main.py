@@ -24,9 +24,6 @@ class App:
     def disable_event(self):
         pass
 
-    def data_entry(self):
-        pass
-
     def exit_open_menu(self, opt):
         opt.protocol("WM_DELETE_WINDOW", self.disable_event)
         close_menu = Button(opt, text="Close Main Menu", command=self.win.withdraw)
@@ -46,6 +43,9 @@ class App:
         to_read.title("Book Register App - [Books To Read]")
         self.exit_open_menu(to_read)
         to_read.mainloop()
+        
+    def data_entry(self):
+        pass
 
 
 if __name__ == "__main__":
