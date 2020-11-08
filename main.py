@@ -119,6 +119,16 @@ class App:
                           command=lambda: self.register_book(opt, data_key, main_table))
         register.grid(row=6, column=1, columnspan=2, pady=10)
 
+        alt_options = Frame(opt)
+        alt_options.grid(column=2, row=8)
+
+        delete = Button(alt_options, text="Delete", padx=30, pady=10,
+                        command=lambda: self.delete_book(opt, data_key, main_table))
+        delete.grid(row=8, column=1, pady=10)
+
+        update = Button(alt_options, text="Update", padx=30, pady=10)
+        update.grid(row=8, column=2, pady=10)
+
         main_table = ttk.Treeview(opt, height=10, columns=(0, 1, 2, 3))
         main_table.grid(row=7, column=2, sticky="nsew", padx=10, pady=10)
 
@@ -175,11 +185,28 @@ class App:
                 self.book_author.delete(0, END)
                 self.book_genre.delete(0, END)
                 self.book_pages.delete(0, END)
-            self.list_books(main_table, data_key)
             messagebox.showinfo("Success", f"New book has been successfully added.", parent=opt)
         else:
             messagebox.showwarning("Warning", "Fields title, author and genre must not be empty.", parent=opt)
-            self.list_books(main_table, data_key)
+        self.list_books(main_table, data_key)
+
+    def delete_book(self, opt, data_key, main_table):
+        if not main_table.item(main_table.selection())['text']:
+            messagebox.showerror("Index Error", "Please choose a record.", parent=opt)
+        else:
+            confirm_deletion = messagebox.askyesno("Confirm Deletion",
+                                                   "Are you sure you want to delete this record?", parent=opt)
+            if confirm_deletion:
+                if data_key == 0:
+                    query = "DELETE FROM books_read WHERE title = ?"
+                    title = main_table.item(main_table.selection())['text']
+                    self.query(query, (title,))
+                else:
+                    query = "DELETE FROM books_to_read WHERE title = ?"
+                    title = main_table.item(main_table.selection())['text']
+                    self.query(query, (title,))
+                messagebox.showinfo("Success", "Record has been successfully deleted.", parent=opt)
+        self.list_books(main_table, data_key)
 
 
 if __name__ == "__main__":
