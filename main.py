@@ -155,7 +155,7 @@ class App:
             main_table.insert('', 0, text=row[1], values=(row[2], row[3], row[4], row[5]))
 
     def register_book(self, opt, data_key, main_table):
-        if self.validate_data() is True:
+        if self.validate_data():
             if data_key == 0:
                 query = "INSERT INTO books_read VALUES(NULL, ?, ?, ?, ?, ?)"
                 parameters = (self.book_title.get(), self.book_author.get(), self.book_genre.get(),
@@ -175,8 +175,8 @@ class App:
                 self.book_author.delete(0, END)
                 self.book_genre.delete(0, END)
                 self.book_pages.delete(0, END)
-
-            messagebox.showinfo("Success", f"{self.book_title.get()} has been added successfully.", parent=opt)
+            self.list_books(main_table, data_key)
+            messagebox.showinfo("Success", f"New book has been successfully added.", parent=opt)
         else:
             messagebox.showwarning("Warning", "Fields title, author and genre must not be empty.", parent=opt)
             self.list_books(main_table, data_key)
