@@ -126,7 +126,8 @@ class App:
                         command=lambda: self.delete_book(opt, data_key, main_table))
         delete.grid(row=8, column=1, pady=10)
 
-        update = Button(alt_options, text="Update", padx=30, pady=10)
+        update = Button(alt_options, text="Update", padx=30, pady=10,
+                        command=lambda: self.update_book(opt, data_key, main_table))
         update.grid(row=8, column=2, pady=10)
 
         main_table = ttk.Treeview(opt, height=10, columns=(0, 1, 2, 3))
@@ -199,14 +200,84 @@ class App:
             if confirm_deletion:
                 if data_key == 0:
                     query = "DELETE FROM books_read WHERE title = ?"
-                    title = main_table.item(main_table.selection())['text']
-                    self.query(query, (title,))
                 else:
                     query = "DELETE FROM books_to_read WHERE title = ?"
-                    title = main_table.item(main_table.selection())['text']
-                    self.query(query, (title,))
+                title = main_table.item(main_table.selection())['text']
+                self.query(query, (title,))
                 messagebox.showinfo("Success", "Record has been successfully deleted.", parent=opt)
         self.list_books(main_table, data_key)
+
+    def update_book(self, opt, data_key, main_table):
+        if not main_table.item(main_table.selection())['text']:
+            messagebox.showerror("Index Error", "Please choose a record.", parent=opt)
+        else:
+            title = main_table.item(main_table.selection())['text']
+            past_author = main_table.item(main_table.selection())['values'][0]
+            past_genre = main_table.item(main_table.selection())['values'][1]
+            past_rating = main_table.item(main_table.selection())['values'][2]
+            past_pages = main_table.item(main_table.selection())['values'][3]
+
+            update_win = Toplevel()
+            update_win.title = "Update Window"
+
+            Label(update_win, text="Past Title").grid(row=0, column=1)
+            Entry(update_win, textvariable=StringVar(update_win, value=title),
+                  state="readonly").grid(row=0, column=2)
+
+            Label(update_win, text="New Title").grid(row=1, column=1)
+            new_title = Entry(update_win)
+            new_title.grid(row=1, column=2)
+
+            Label(update_win, text="Past Author").grid(row=2, column=1)
+            Entry(update_win, textvariable=StringVar(update_win, value=past_author),
+                  state="readonly").grid(row=2, column=2)
+
+            Label(update_win, text="New Author").grid(row=3, column=1)
+            new_author = Entry(update_win)
+            new_author.grid(row=3, column=2)
+
+            Label(update_win, text="Past Genre").grid(row=4, column=1)
+            Entry(update_win, textvariable=StringVar(update_win, value=past_genre),
+                  state="readonly").grid(row=4, column=2)
+
+            Label(update_win, text="New Genre").grid(row=5, column=1)
+            new_genre = Entry(update_win)
+            new_genre.grid(row=5, column=2)
+
+            Label(update_win, text="Past Rating").grid(row=6, column=1)
+            Entry(update_win, textvariable=StringVar(update_win, value=past_rating),
+                  state="readonly").grid(row=6, column=2)
+
+            Label(update_win, text="New Rating").grid(row=7, column=1)
+            new_rating = Entry(update_win)
+            new_rating.grid(row=7, column=2)
+
+            Label(update_win, text="Past Pages").grid(row=8, column=1)
+            Entry(update_win, textvariable=StringVar(update_win, value=past_pages),
+                  state="readonly").grid(row=8, column=2)
+
+            Label(update_win, text="New Pages").grid(row=9, column=1)
+            new_pages = Entry(update_win)
+            new_pages.grid(row=9, column=2)
+
+            par = (new_title.get(), new_author.get(), new_genre.get(), new_rating.get(), new_pages.get(),
+                   title, past_author, past_genre, past_rating, past_pages)
+            apply_changes = Button(update_win, text="Apply Changes",
+                                   command=lambda: self.apply_changes(opt, update_win, data_key, main_table, par))
+            apply_changes.grid(row=10, column=1, columnspan=2)
+
+    def apply_changes(self, opt, update_win, data_key, main_table, par=()):
+        if data_key == 0:
+            query = """UPDATE books_read SET title = ?, author = ?, genre = ?, rating = ?,
+            pages = ? WHERE title = ? AND author = ? AND genre = ? AND rating = ? AND pages = ?"""
+            self.query(query, par)
+        else:
+            query = """UPDATE books_to_read SET title = ?, author = ?, genre = ?, rating = ?, 
+            pages = ? WHERE title = ? AND author = ? AND genre = ? AND rating = ? AND pages = ?"""
+            self.query(query, par)
+        update_win.destroy()
+        self.list_books(main_table, data_key)
+        messagebox.showinfo("Success", "Data successfully updated.", parent=opt)
 
 
 if __name__ == "__main__":
